@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useState, useEffect} from 'react';
 import './App.css';
+import SearchMeme from "./components/SearchMeme"
+import MemeResult from "./components/MemeResult";
+import axios from "axios";
 
-function App() {
+
+const App = () => {   
+  const [allMemes, setAllMemes] = useState([]);
+  const [searchText, setSearchText] = useState("");
+
+  useEffect(() => {
+    axios.get('https://api.imgflip.com/get_memes')
+      .then(data => {
+        setAllMemes(data.data.data.memes)
+      })
+  }, [])
+
+  const searchTextOnChange = (event) => {
+    setSearchText(event.target.value)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <SearchMeme searchSomeMemes={searchTextOnChange} />
+      <MemeResult memeArr={allMemes.filter(meme => meme.name.toLowerCase().includes(searchText) ) }/>
     </div>
   );
 }
